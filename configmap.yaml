@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-html
+data:
+  index.html: |
+    <html>
+      <body>
+        <h1>¡Hola, Alberto! 🚀</h1>
+        <p>GitOps funcionando en dev ✅</p>
+      </body>
+    </html>

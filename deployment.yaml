@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: myapp
+  namespace: dev
 spec:
   replicas: 2
   selector:
@@ -12,13 +13,33 @@ spec:
       labels:
         app: myapp
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: myapp
+              topologyKey: kubernetes.io/hostname
+
       containers:
-      - name: myapp
-        image: nginx:latest
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: myapp
+          image: nginx:latest
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+
       volumes:
-      - name: html
-        configMap:
-          name: myapp-html
+        - name: html
+          configMap:
+            name: myapp-html
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: myapp-pdb
+  namespace: dev
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: myapp
